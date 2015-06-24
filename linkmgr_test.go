@@ -1,4 +1,4 @@
-package cybergrab
+package main
 
 import (
 	"testing"

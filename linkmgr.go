@@ -1,27 +1,32 @@
-package cybergrab
+package main
 
-import ()
+import (
+	//"fmt"
+)
 
 const (
 	channel_buffer_size = 100
 )
 
-type LinkMgr struct {
+type SimpleLinkMgr struct {
 	urls chan string
 }
 
-func NewLinkMgr() *LinkMgr {
-	l := &LinkMgr{}
+func NewSimpleLinkMgr() *SimpleLinkMgr {
+	l := &SimpleLinkMgr{}
 	l.urls = make(chan string, channel_buffer_size)
 
 	return l
 }
 
-func (l *LinkMgr) pushUrl(url string) {
-	l.urls <- url
+func (this *SimpleLinkMgr) pushUrl(url string) {
+	this.urls <- url
 }
 
-func (l *LinkMgr) getUrl() string {
-	return <- l.urls
+func (this *SimpleLinkMgr) getUrl() string {
+	return <-this.urls
 }
 
+func (this *SimpleLinkMgr) shutdown() {
+	close(this.urls)
+}

@@ -5,7 +5,7 @@ import (
 )
 
 func main() {
-	fmt.Println("CyberGrab, v1.0")
+	fmt.Println("CyberGrab, v0.1")
 
 	var engine Scheduler
 	var downloader Downloader

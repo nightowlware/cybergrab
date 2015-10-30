@@ -18,7 +18,7 @@ func invalidUrl(url string) bool {
 	return url == ""
 }
 
-// This function *must* feed the downloader at least one url to download,
+// This function *must* feed (via addDownload) the downloader at least one url to download,
 // otherwise the downloader will wait indefinitely for it to supply one (bad).
 func (this *PageMinion) run(url string) {
 	fmt.Println("Page Minion: " + url)

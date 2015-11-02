@@ -10,8 +10,9 @@ func main() {
 	var engine Scheduler
 	var downloader Downloader
 
+	numdownloads should be in the downloader
 	downloader = NewSimpleDownloader("downloads")
-	engine = NewSimpleScheduler(10, downloader)
+	engine = NewSimpleScheduler(10, 1000, downloader)
 
 	engine.run("http://www.cnn.com")
 

@@ -22,7 +22,8 @@ func NewSimpleDownloader(folderName string) *SimpleDownloader {
 	return sd
 }
 
-// Blocking call - will not return until N pages are downloaded
+// Blocking call - will not return until N pages are downloaded,
+// or if urlChannel is closed.
 func (this *SimpleDownloader) processNDownloads(N int) {
 	for i := 0; i < N; i++ {
 		this.downloadPage(<-this.urlChannel)

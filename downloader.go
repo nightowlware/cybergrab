@@ -11,12 +11,14 @@ import (
 type SimpleDownloader struct {
 	folderName string
 	urlChannel chan string
+	numDownloads int
 }
 
-func NewSimpleDownloader(folderName string) *SimpleDownloader {
+func NewSimpleDownloader(folderName string, numDownloads int) *SimpleDownloader {
 	sd := &SimpleDownloader{}
 	sd.folderName = folderName
 	sd.urlChannel = make(chan string)
+	sd.numDownloads = numDownloads
 
 	os.MkdirAll(folderName, 0777)
 	return sd
@@ -24,8 +26,8 @@ func NewSimpleDownloader(folderName string) *SimpleDownloader {
 
 // Blocking call - will not return until N pages are downloaded,
 // or if urlChannel is closed.
-func (this *SimpleDownloader) processNDownloads(N int) {
-	for i := 0; i < N; i++ {
+func (this *SimpleDownloader) processDownloads() {
+	for i := 0; i < this.numDownloads; i++ {
 		this.downloadPage(<-this.urlChannel)
 	}
 }

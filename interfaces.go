@@ -12,7 +12,7 @@ type Scheduler interface {
 }
 
 type Downloader interface {
-	processNDownloads(N int)
+	processDownloads()
 	addDownload(url string)
 	listDownloads() []string
 }

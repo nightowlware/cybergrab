@@ -8,14 +8,12 @@ type SimpleScheduler struct {
 	linkDispenser    LinkDispenser
 	downloader       Downloader
 	numPageScrubbers int
-	numMaxDownloads  int
 }
 
-func NewSimpleScheduler(numPageScrubbers int, numMaxDownloads int, downloader Downloader) *SimpleScheduler {
+func NewSimpleScheduler(numPageScrubbers int, downloader Downloader) *SimpleScheduler {
 	scheduler := &SimpleScheduler{}
 	scheduler.downloader = downloader
 	scheduler.numPageScrubbers = numPageScrubbers
-	scheduler.numMaxDownloads = numMaxDownloads
 	return scheduler
 }
 
@@ -36,8 +34,8 @@ func (this *SimpleScheduler) run(seedUrl string) {
 		}()
 	}
 
-	// perform N downloads from the downloader - blocking.
-	this.downloader.processNDownloads(this.numPageScrubbers)
+	// perform downloads from the downloader - blocking until done or timeout.
+	this.downloader.processDownloads()
 }
 
 func (this *SimpleScheduler) stop() {

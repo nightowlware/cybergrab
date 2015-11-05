@@ -20,13 +20,17 @@ func invalidUrl(url string) bool {
 	return url == ""
 }
 
-// This function *must* feed (via addDownload) the downloader at least one url to download,
-// otherwise the downloader will block indefinitely for it to supply one (bad).
+// Instructs this minion to process the given url. 
+//
+// This minion can do any combination of:
+// 1. Push a new url into the download queue
+// 2. Push a new url into the link dispenser queue, for other minions to run()
+// 3. Do nothing
 func (this *PageMinion) run(url string) {
 	fmt.Println("PageMinion: Scrubbing page: " + url)
 
 	if invalidUrl(url) {
-		this.downloader.addDownload("INVALID")
+		fmt.Println("URL <", url, "> is invalid, ignoring.")
 	} else {
 		this.downloader.addDownload(url)
 	}

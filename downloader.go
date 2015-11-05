@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"sync"
 )
 
 type SimpleDownloader struct {
@@ -27,13 +28,20 @@ func NewSimpleDownloader(folderName string, numDownloads int) *SimpleDownloader 
 // Blocking call - will not return until N pages are downloaded,
 // or if urlChannel is closed.
 func (this *SimpleDownloader) processDownloads() {
+	var wait_group sync.WaitGroup
+
 	for i := 0; i < this.numDownloads; i++ {
-		this.downloadPage(<-this.urlChannel)
+		wait_group.Add(1)
+		go func() {
+			this.downloadPage(<-this.urlChannel)
+		}()
 	}
+
+	// wait for all the downloading goroutines to finish
+	wait_group.Wait()
 }
 
 func (this *SimpleDownloader) addDownload(url string) {
-	fmt.Println("Adding Download: ", url)
 	this.urlChannel <- url
 }
 

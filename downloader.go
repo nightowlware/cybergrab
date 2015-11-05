@@ -2,15 +2,15 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 	"io"
+	"net/http"
 	"os"
 	"strings"
 )
 
 type SimpleDownloader struct {
-	folderName string
-	urlChannel chan string
+	folderName   string
+	urlChannel   chan string
 	numDownloads int
 }
 
@@ -33,6 +33,7 @@ func (this *SimpleDownloader) processDownloads() {
 }
 
 func (this *SimpleDownloader) addDownload(url string) {
+	fmt.Println("Adding Download: ", url)
 	this.urlChannel <- url
 }
 

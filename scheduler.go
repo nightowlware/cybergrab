@@ -45,5 +45,5 @@ func (this *SimpleScheduler) stop() {
 }
 
 func (this *SimpleScheduler) makePageScrubber() PageScrubber {
-	return NewPageMinion(this.downloader)
+	return NewPageMinion(this.linkDispenser, this.downloader)
 }

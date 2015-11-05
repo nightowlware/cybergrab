@@ -6,11 +6,13 @@ import (
 
 type PageMinion struct {
 	downloader Downloader
+	linkdispenser LinkDispenser
 }
 
-func NewPageMinion(d Downloader) *PageMinion {
+func NewPageMinion(l LinkDispenser, d Downloader) *PageMinion {
 	m := &PageMinion{}
 	m.downloader = d
+	m.linkdispenser = l
 	return m
 }
 
@@ -28,4 +30,6 @@ func (this *PageMinion) run(url string) {
 	} else {
 		this.downloader.addDownload(url)
 	}
+
+	this.linkdispenser.pushUrl("http://www.reddit.com")
 }

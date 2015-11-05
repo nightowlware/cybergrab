@@ -1,12 +1,12 @@
 package main
 
 import (
-	"testing"
 	"fmt"
+	"testing"
 )
 
 func TestBasic(t *testing.T) {
-	lmgr := NewLinkMgr();
+	lmgr := NewLinkMgr()
 
 	lmgr.pushUrl("www.cnn.com")
 	fmt.Println(lmgr.getUrl())

@@ -20,3 +20,8 @@ type Downloader interface {
 type PageScrubber interface {
 	run(url string)
 }
+
+type CrawlPolicy interface {
+	ShouldDownload() bool
+	ShouldCrawl() bool
+}

@@ -27,13 +27,15 @@ func NewSimpleDownloader(folderName string, numDownloads int) *SimpleDownloader 
 
 // Blocking call - will not return until N pages are downloaded,
 // or if urlChannel is closed.
+// Reads numDownloads' worth of Urls, and downloads each Url 
+// in its separate goroutine.
 func (this *SimpleDownloader) processDownloads() {
 	var wait_group sync.WaitGroup
 
 	for i := 0; i < this.numDownloads; i++ {
 		wait_group.Add(1)
 		go func() {
-			this.downloadPage(<-this.urlChannel)
+			this.downloadUrl(<-this.urlChannel)
 		}()
 	}
 
@@ -49,7 +51,7 @@ func (this *SimpleDownloader) listDownloads() []string {
 	return []string{"not implemented yet"}
 }
 
-func (this *SimpleDownloader) downloadPage(url string) {
+func (this *SimpleDownloader) downloadUrl(url string) {
 	fmt.Println("Downloading page: ", url)
 
 	arr := strings.Split(url, "/")

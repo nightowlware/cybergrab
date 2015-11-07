@@ -30,7 +30,7 @@ func (this *SimpleScheduler) run(seedUrl string) {
 	for i := 0; i < this.numPageScrubbers; i++ {
 		go func() {
 			// getUrl() is a blocking receive on a channel
-			this.makePageScrubber().run(this.linkDispenser.getUrl())
+			PageMinion{this}.run(this.linkDispenser.getUrl())
 		}()
 	}
 
@@ -44,6 +44,24 @@ func (this *SimpleScheduler) stop() {
 	this.linkDispenser = nil
 }
 
-func (this *SimpleScheduler) makePageScrubber() PageScrubber {
-	return NewPageMinion(this.linkDispenser, this.downloader)
+func (this *SimpleScheduler) getLinkDispenser() LinkDispenser {
+	return this.linkDispenser
+}
+
+func (this *SimpleScheduler) getDownloader() Downloader {
+	return this.downloader
+}
+
+func (this *SimpleScheduler) getCrawlPolicy() CrawlPolicy {
+	return simplePolicy{}
+}
+
+type simplePolicy struct{}
+
+func (s simplePolicy) ShouldCrawl(url string) bool {
+	return true
+}
+
+func (s simplePolicy) ShouldDownload(url string) bool {
+	return false
 }

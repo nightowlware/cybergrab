@@ -9,6 +9,9 @@ type LinkDispenser interface {
 type Scheduler interface {
 	run(seedUrl string)
 	stop()
+	getLinkDispenser() LinkDispenser
+	getDownloader() Downloader
+	getCrawlPolicy() CrawlPolicy
 }
 
 type Downloader interface {
@@ -22,6 +25,6 @@ type PageScrubber interface {
 }
 
 type CrawlPolicy interface {
-	ShouldDownload() bool
-	ShouldCrawl() bool
+	ShouldDownload(url string) bool
+	ShouldCrawl(url string) bool
 }

@@ -8,30 +8,22 @@ import (
 )
 
 type PageMinion struct {
-	downloader    Downloader
-	linkdispenser LinkDispenser
-}
-
-func NewPageMinion(l LinkDispenser, d Downloader) *PageMinion {
-	m := &PageMinion{}
-	m.downloader = d
-	m.linkdispenser = l
-	return m
+	scheduler Scheduler
 }
 
 func invalidUrl(url string) bool {
 	return url == ""
 }
 
-// Instructs this minion to process the given url.
+// Instructs this minion to process the given url.i
 //
-// This minion can do any combination of:
+// This minion can do any combination of:         }
 // 1. Push a new url into the download queue
-// 2. Push a new url into the link dispenser queue, for other minions to run()
+// 2. Push a new url into the link dispenser queuei, for other minions to run()
 // 3. Do nothing
-//
+//                                                }
 // Returns error or nil for success
-func (this *PageMinion) run(url string) error {
+func (this PageMinion) run(url string) error {
 	fmt.Println("PageMinion: Scrubbing page: " + url)
 
 	if invalidUrl(url) {
@@ -46,8 +38,8 @@ func (this *PageMinion) run(url string) error {
 
 		z := html.NewTokenizer(resp.Body)
 
-		// iterate through all hrefs and decide whether to 
-		// download the page, push the page into the queue for 
+		// iterate through all hrefs and decide whether to
+		// download the page, push the page into the queue for
 		// other PageScrubbers to process, or both.
 		for tt := z.Next(); tt != html.ErrorToken; tt = z.Next() {
 			switch {
@@ -66,16 +58,13 @@ func (this *PageMinion) run(url string) error {
 							}
 							fmt.Println("Found href!: ", href_link)
 
-							this.downloader.addDownload(href_link)
-							this.linkdispenser.pushUrl(href_link)
+							if this.scheduler.getCrawlPolicy().ShouldDownload(href_link) {
+								this.scheduler.getDownloader().addDownload(href_link)
+							}
 
-							//if (shouldDownload(href_link)) {
-							//	this.downloader.addDownload(href_link)
-							//}
-
-							//if (shouldCrawl(href_link)) {
-							//	this.linkdispenser.pushUrl(href_link)
-							//}
+							if this.scheduler.getCrawlPolicy().ShouldCrawl(href_link) {
+								this.scheduler.getLinkDispenser().pushUrl(href_link)
+							}
 						}
 					}
 				}

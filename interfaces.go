@@ -18,7 +18,7 @@ type Downloader interface {
 }
 
 type PageScrubber interface {
-	run(url string)
+	run(url string) error
 }
 
 type CrawlPolicy interface {

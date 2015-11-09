@@ -1,4 +1,4 @@
-package main
+package cybergrab
 
 type LinkDispenser interface {
 	pushUrl(url string)

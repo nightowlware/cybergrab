@@ -1,12 +1,11 @@
-package main
+package cybergrab
 
 import (
-	"fmt"
+	_ "fmt"
+	"testing"
 )
 
-func main() {
-	fmt.Println("CyberGrab, v0.1")
-
+func TestBasic(t *testing.T) {
 	var engine Scheduler
 	var downloader Downloader
 
@@ -14,8 +13,4 @@ func main() {
 	engine = NewSimpleScheduler(10, downloader)
 
 	engine.run("http://www.cnn.com")
-
-	//var input string
-	//fmt.Scanln(&input)
-	//panic("END")
 }

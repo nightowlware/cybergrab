@@ -1,26 +1,26 @@
 package cybergrab
 
-type LinkDispenser interface {
+type linkDispenser interface {
 	pushUrl(url string)
 	getUrl() string
 	shutdown()
 }
 
-type Scheduler interface {
+type scheduler interface {
 	run(seedUrl string)
 	stop()
-	getLinkDispenser() LinkDispenser
-	getDownloader() Downloader
+	getLinkDispenser() linkDispenser
+	getDownloader() downloader
 	getCrawlPolicy() CrawlPolicy
 }
 
-type Downloader interface {
+type downloader interface {
 	processDownloads()
 	addDownload(url string)
 	listDownloads() []string
 }
 
-type PageScrubber interface {
+type pageScrubber interface {
 	run(url string) error
 }
 

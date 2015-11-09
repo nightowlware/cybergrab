@@ -8,7 +8,7 @@ import (
 )
 
 type PageMinion struct {
-	scheduler Scheduler
+	scheduler scheduler
 }
 
 func invalidUrl(url string) bool {
@@ -56,7 +56,6 @@ func (this PageMinion) run(url string) error {
 							if !strings.HasPrefix(href_link, "http://") {
 								href_link = url + href_link
 							}
-							fmt.Println("Found href!: ", href_link)
 
 							if this.scheduler.getCrawlPolicy().ShouldDownload(href_link) {
 								this.scheduler.getDownloader().addDownload(href_link)

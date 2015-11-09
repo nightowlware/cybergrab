@@ -4,25 +4,25 @@ import (
 	"fmt"
 )
 
-type SimpleScheduler struct {
-	linkDispenser    LinkDispenser
-	downloader       Downloader
+type simpleScheduler struct {
+	linkDispenser    linkDispenser
+	downloader       downloader
 	numPageScrubbers int
 }
 
-func NewSimpleScheduler(numPageScrubbers int, downloader Downloader) *SimpleScheduler {
-	scheduler := &SimpleScheduler{}
+func newSimpleScheduler(numPageScrubbers int, downloader downloader) *simpleScheduler {
+	scheduler := &simpleScheduler{}
 	scheduler.downloader = downloader
 	scheduler.numPageScrubbers = numPageScrubbers
 	return scheduler
 }
 
-func (this *SimpleScheduler) run(seedUrl string) {
+func (this *simpleScheduler) run(seedUrl string) {
 	fmt.Printf("Starting a web-crawl @ seedUrl: %s\n", seedUrl)
 
 	// lazy initialization
 	if this.linkDispenser == nil {
-		this.linkDispenser = NewSimpleLinkMgr()
+		this.linkDispenser = newSimpleLinkMgr()
 		this.linkDispenser.pushUrl(seedUrl)
 	}
 
@@ -38,21 +38,21 @@ func (this *SimpleScheduler) run(seedUrl string) {
 	this.downloader.processDownloads()
 }
 
-func (this *SimpleScheduler) stop() {
+func (this *simpleScheduler) stop() {
 	fmt.Println("Stopping")
 	this.linkDispenser.shutdown()
 	this.linkDispenser = nil
 }
 
-func (this *SimpleScheduler) getLinkDispenser() LinkDispenser {
+func (this *simpleScheduler) getLinkDispenser() linkDispenser {
 	return this.linkDispenser
 }
 
-func (this *SimpleScheduler) getDownloader() Downloader {
+func (this *simpleScheduler) getDownloader() downloader {
 	return this.downloader
 }
 
-func (this *SimpleScheduler) getCrawlPolicy() CrawlPolicy {
+func (this *simpleScheduler) getCrawlPolicy() CrawlPolicy {
 	return simplePolicy{}
 }
 

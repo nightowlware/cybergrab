@@ -9,14 +9,14 @@ import (
 	"sync"
 )
 
-type SimpleDownloader struct {
+type simpleDownloader struct {
 	folderName   string
 	urlChannel   chan string
 	numDownloads int
 }
 
-func NewSimpleDownloader(folderName string, numDownloads int) *SimpleDownloader {
-	sd := &SimpleDownloader{}
+func newSimpleDownloader(folderName string, numDownloads int) *simpleDownloader {
+	sd := &simpleDownloader{}
 	sd.folderName = folderName
 	sd.urlChannel = make(chan string)
 	sd.numDownloads = numDownloads
@@ -27,9 +27,9 @@ func NewSimpleDownloader(folderName string, numDownloads int) *SimpleDownloader 
 
 // Blocking call - will not return until N pages are downloaded,
 // or if urlChannel is closed.
-// Reads numDownloads' worth of Urls, and downloads each Url 
+// Reads numDownloads' worth of Urls, and downloads each Url
 // in its separate goroutine.
-func (this *SimpleDownloader) processDownloads() {
+func (this *simpleDownloader) processDownloads() {
 	var wait_group sync.WaitGroup
 
 	for i := 0; i < this.numDownloads; i++ {
@@ -43,15 +43,15 @@ func (this *SimpleDownloader) processDownloads() {
 	wait_group.Wait()
 }
 
-func (this *SimpleDownloader) addDownload(url string) {
+func (this *simpleDownloader) addDownload(url string) {
 	this.urlChannel <- url
 }
 
-func (this *SimpleDownloader) listDownloads() []string {
+func (this *simpleDownloader) listDownloads() []string {
 	return []string{"not implemented yet"}
 }
 
-func (this *SimpleDownloader) downloadUrl(url string) {
+func (this *simpleDownloader) downloadUrl(url string) {
 	fmt.Println("Downloading page: ", url)
 
 	arr := strings.Split(url, "/")

@@ -8,25 +8,25 @@ const (
 	channel_buffer_size = 100
 )
 
-type SimpleLinkMgr struct {
+type simpleLinkMgr struct {
 	urls chan string
 }
 
-func NewSimpleLinkMgr() *SimpleLinkMgr {
-	l := &SimpleLinkMgr{}
+func newSimpleLinkMgr() *simpleLinkMgr {
+	l := &simpleLinkMgr{}
 	l.urls = make(chan string, channel_buffer_size)
 
 	return l
 }
 
-func (this *SimpleLinkMgr) pushUrl(url string) {
+func (this *simpleLinkMgr) pushUrl(url string) {
 	this.urls <- url
 }
 
-func (this *SimpleLinkMgr) getUrl() string {
+func (this *simpleLinkMgr) getUrl() string {
 	return <-this.urls
 }
 
-func (this *SimpleLinkMgr) shutdown() {
+func (this *simpleLinkMgr) shutdown() {
 	close(this.urls)
 }

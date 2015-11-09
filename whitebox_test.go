@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestBasic(t *testing.T) {
+func _TestBasic(t *testing.T) {
 	var engine scheduler
 	var downloader downloader
 

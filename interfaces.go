@@ -1,5 +1,20 @@
 package cybergrab
 
+///////////////////////////////
+/// Public API
+///////////////////////////////
+
+type CrawlPolicy interface {
+	ShouldDownload(url string) bool
+	ShouldCrawl(url string) bool
+}
+
+type Spider interface {
+	Crawl(seedURL string) error
+}
+
+///////////////////////////////
+
 type linkDispenser interface {
 	pushUrl(url string)
 	getUrl() string
@@ -22,9 +37,4 @@ type downloader interface {
 
 type pageScrubber interface {
 	run(url string) error
-}
-
-type CrawlPolicy interface {
-	ShouldDownload(url string) bool
-	ShouldCrawl(url string) bool
 }

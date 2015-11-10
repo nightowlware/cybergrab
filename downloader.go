@@ -12,10 +12,10 @@ import (
 type simpleDownloader struct {
 	folderName   string
 	urlChannel   chan string
-	numDownloads int
+	numDownloads uint
 }
 
-func newSimpleDownloader(folderName string, numDownloads int) *simpleDownloader {
+func newSimpleDownloader(folderName string, numDownloads uint) *simpleDownloader {
 	sd := &simpleDownloader{}
 	sd.folderName = folderName
 	sd.urlChannel = make(chan string)
@@ -32,7 +32,7 @@ func newSimpleDownloader(folderName string, numDownloads int) *simpleDownloader 
 func (this *simpleDownloader) processDownloads() {
 	var wait_group sync.WaitGroup
 
-	for i := 0; i < this.numDownloads; i++ {
+	for i := uint(0); i < this.numDownloads; i++ {
 		wait_group.Add(1)
 		go func() {
 			this.downloadUrl(<-this.urlChannel)

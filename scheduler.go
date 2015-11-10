@@ -7,13 +7,15 @@ import (
 type simpleScheduler struct {
 	linkDispenser    linkDispenser
 	downloader       downloader
-	numPageScrubbers int
+	numPageScrubbers uint
+	policy           CrawlPolicy
 }
 
-func newSimpleScheduler(numPageScrubbers int, downloader downloader) *simpleScheduler {
+func newSimpleScheduler(cp CrawlPolicy, numPageScrubbers uint, downloader downloader) *simpleScheduler {
 	scheduler := &simpleScheduler{}
 	scheduler.downloader = downloader
 	scheduler.numPageScrubbers = numPageScrubbers
+	scheduler.policy = cp
 	return scheduler
 }
 
@@ -27,10 +29,11 @@ func (this *simpleScheduler) run(seedUrl string) {
 	}
 
 	// launch N PageScrubbers, each in their own goroutine
-	for i := 0; i < this.numPageScrubbers; i++ {
+	for i := uint(0); i < this.numPageScrubbers; i++ {
+		fmt.Println("Spawning a PageScrubber")
 		go func() {
 			// getUrl() is a blocking receive on a channel
-			PageMinion{this}.run(this.linkDispenser.getUrl())
+			pageMinion{this}.run(this.linkDispenser.getUrl())
 		}()
 	}
 
@@ -53,15 +56,5 @@ func (this *simpleScheduler) getDownloader() downloader {
 }
 
 func (this *simpleScheduler) getCrawlPolicy() CrawlPolicy {
-	return simplePolicy{}
-}
-
-type simplePolicy struct{}
-
-func (s simplePolicy) ShouldCrawl(url string) bool {
-	return true
-}
-
-func (s simplePolicy) ShouldDownload(url string) bool {
-	return false
+	return this.policy
 }

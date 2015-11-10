@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-type PageMinion struct {
+type pageMinion struct {
 	scheduler scheduler
 }
 
@@ -23,8 +23,8 @@ func invalidUrl(url string) bool {
 // 3. Do nothing
 //                                                }
 // Returns error or nil for success
-func (this PageMinion) run(url string) error {
-	fmt.Println("PageMinion: Scrubbing page: " + url)
+func (this pageMinion) run(url string) error {
+	fmt.Println("pageMinion: Scrubbing page: " + url)
 
 	if invalidUrl(url) {
 		return fmt.Errorf("URL <%s> is invalid, ignoring.", url)

@@ -1,7 +1,7 @@
 package cybergrab
 
 ///////////////////////////////
-/// Public API
+/// Public Interfaces
 ///////////////////////////////
 
 type CrawlPolicy interface {

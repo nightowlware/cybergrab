@@ -52,25 +52,27 @@ func (this *simpleDownloader) listDownloads() []string {
 }
 
 func (this *simpleDownloader) downloadUrl(url string) {
-	fmt.Println("Downloading page: ", url)
-
 	arr := strings.Split(url, "/")
 	name := this.folderName + "/" + arr[len(arr)-1]
 
+	// attempt to create a file based on name
+	fmt.Printf("Attempting to create file with name %s\n", name)
 	file, err := os.Create(name)
-	if err != nil {
-		fmt.Println(err)
-	}
 	defer file.Close()
+	if err != nil {
+		return
+	}
 
 	resp, err := http.Get(url)
-	if err != nil {
-		fmt.Println(err)
-	}
 	defer resp.Body.Close()
+	if err != nil {
+		return
+	}
 
 	_, err = io.Copy(file, resp.Body)
 	if err != nil {
 		fmt.Println(err)
+	} else {
+		fmt.Println("Downloaded url: ", url)
 	}
 }

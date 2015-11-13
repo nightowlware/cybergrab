@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"golang.org/x/net/html"
 	"net/http"
+	"reflect"
 	"strings"
 )
 
@@ -46,7 +47,28 @@ func (this pageMinion) run(url string) error {
 			case tt == html.StartTagToken:
 				t := z.Token()
 
-				// if we find an anchor
+				fmt.Println("t.Data is: ", t.Data)
+
+				// if we find downloadable content
+				if t.Data == "img" || t.Data == "link" {
+					fmt.Println("Attr is: ", reflect.TypeOf(t.Attr[0]), t.Attr)
+
+					for _, attr := range t.Attr {
+						if attr.Key == "src" {
+							href_link := attr.Val
+							// deal with relative links
+							if !strings.HasPrefix(href_link, "http://") {
+								href_link = url + href_link
+							}
+
+							if this.scheduler.getCrawlPolicy().ShouldDownload(href_link) {
+								this.scheduler.getDownloader().addDownload(href_link)
+							}
+						}
+					}
+				}
+
+				// if we find an a link that can be followed
 				if t.Data == "a" {
 					// search for href
 					for _, a := range t.Attr {
@@ -55,10 +77,6 @@ func (this pageMinion) run(url string) error {
 							// deal with relative links
 							if !strings.HasPrefix(href_link, "http://") {
 								href_link = url + href_link
-							}
-
-							if this.scheduler.getCrawlPolicy().ShouldDownload(href_link) {
-								this.scheduler.getDownloader().addDownload(href_link)
 							}
 
 							if this.scheduler.getCrawlPolicy().ShouldCrawl(href_link) {

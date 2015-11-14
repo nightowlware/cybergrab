@@ -58,16 +58,16 @@ func (this *simpleDownloader) downloadUrl(url string) {
 	// attempt to create a file based on name
 	fmt.Printf("Attempting to create file with name %s\n", name)
 	file, err := os.Create(name)
-	defer file.Close()
 	if err != nil {
 		return
 	}
+	defer file.Close()
 
 	resp, err := http.Get(url)
-	defer resp.Body.Close()
 	if err != nil {
 		return
 	}
+	defer resp.Body.Close()
 
 	_, err = io.Copy(file, resp.Body)
 	if err != nil {

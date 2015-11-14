@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"golang.org/x/net/html"
 	"net/http"
-	"reflect"
 	"strings"
 )
 
@@ -47,41 +46,30 @@ func (this pageMinion) run(url string) error {
 			case tt == html.StartTagToken:
 				t := z.Token()
 
-				fmt.Println("t.Data is: ", t.Data)
-
-				// if we find downloadable content
-				if t.Data == "img" || t.Data == "link" {
-					fmt.Println("Attr is: ", reflect.TypeOf(t.Attr[0]), t.Attr)
-
-					for _, attr := range t.Attr {
-						if attr.Key == "src" {
-							href_link := attr.Val
-							// deal with relative links
-							if !strings.HasPrefix(href_link, "http://") {
-								href_link = url + href_link
-							}
-
-							if this.scheduler.getCrawlPolicy().ShouldDownload(href_link) {
-								this.scheduler.getDownloader().addDownload(href_link)
-							}
-						}
-					}
+				// skip tags that are neither links to follow or downloadable content
+				if !(t.Data == "a" || t.Data == "img" || t.Data == "video" || t.Data == "audio") {
+					continue
 				}
 
-				// if we find an a link that can be followed
-				if t.Data == "a" {
-					// search for href
-					for _, a := range t.Attr {
-						if a.Key == "href" {
-							href_link := a.Val
-							// deal with relative links
-							if !strings.HasPrefix(href_link, "http://") {
-								href_link = url + href_link
-							}
+				for _, attr := range t.Attr {
+					href_link := attr.Val
 
-							if this.scheduler.getCrawlPolicy().ShouldCrawl(href_link) {
-								this.scheduler.getLinkDispenser().pushUrl(href_link)
-							}
+					// deal with relative links
+					if !strings.HasPrefix(href_link, "http://") &&
+						!strings.HasPrefix(href_link, "https://") {
+						href_link = url + href_link
+					}
+
+					// is this a link tag?
+					if attr.Key == "href" {
+						if this.scheduler.getCrawlPolicy().ShouldCrawl(href_link) {
+							this.scheduler.getLinkDispenser().pushUrl(href_link)
+						}
+					}
+
+					if attr.Key == "src" {
+						if this.scheduler.getCrawlPolicy().ShouldDownload(href_link) {
+							this.scheduler.getDownloader().addDownload(href_link)
 						}
 					}
 				}

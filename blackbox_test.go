@@ -22,8 +22,8 @@ func (scp simpleCrawlPolicy) ShouldCrawl(url string) bool {
 func TestBasic(t *testing.T) {
 	var spider cybergrab.Spider
 
-	spider, err := cybergrab.NewSpider(simpleCrawlPolicy{}, 100, 100)
+	spider, err := cybergrab.NewSpider(simpleCrawlPolicy{}, 10000, 10000)
 	if err == nil {
-		spider.Crawl("http://www.cnn.com/2015/11/12/politics/u-s-airstrike-targets-jihadi-john-in-syria/index.html")
+		spider.Crawl("http://www.pawg.site/")
 	}
 }

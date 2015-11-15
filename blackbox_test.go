@@ -3,13 +3,13 @@ package cybergrab_test
 import (
 	"bitbucket/cybergrab"
 	"fmt"
-	"strings"
-	"testing"
-	"os"
-	"runtime"
-	"syscall"
-	"os/signal"
 	"log"
+	"os"
+	"os/signal"
+	"runtime"
+	"strings"
+	"syscall"
+	"testing"
 )
 
 type simpleCrawlPolicy struct {

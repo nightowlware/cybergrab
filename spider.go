@@ -6,8 +6,8 @@ import (
 )
 
 const (
-	MAX_DOWNLOADS = 30000
-	MAX_WORKERS   = 30000
+	MAX_DOWNLOADS          = 30000
+	MAX_WORKERS            = 30000
 	WORKER_TIMEOUT_SECONDS = 5
 )
 

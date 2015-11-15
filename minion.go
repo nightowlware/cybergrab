@@ -33,7 +33,7 @@ func (this pageMinion) run(url string) error {
 
 	// set a timeout for http.Get()
 	timeout := time.Duration(WORKER_TIMEOUT_SECONDS * time.Second)
-	client := http.Client {
+	client := http.Client{
 		Timeout: timeout,
 	}
 

@@ -2,17 +2,18 @@ package cybergrab
 
 import (
 	"errors"
+	"runtime/debug"
 )
 
 const (
-	MAX_DOWNLOADS = 10000
-	MAX_WORKERS   = 10000
+	MAX_DOWNLOADS = 30000
+	MAX_WORKERS   = 30000
+	WORKER_TIMEOUT_SECONDS = 5
 )
 
 ///////////////////////////////
 /// Public API
 ///////////////////////////////
-
 var InvalidArgs error = errors.New("numWorkers/numDownloads too high")
 
 func NewSpider(policy CrawlPolicy, numDownloads uint, numWorkers uint) (Spider, error) {
@@ -22,6 +23,9 @@ func NewSpider(policy CrawlPolicy, numDownloads uint, numWorkers uint) (Spider, 
 
 	d := newSimpleDownloader("downloads", numDownloads)
 	s := newSimpleScheduler(policy, numWorkers, d)
+
+	// set the max number of threads
+	debug.SetMaxThreads(MAX_WORKERS + MAX_DOWNLOADS + 1)
 
 	return &engine{s, d}, nil
 }

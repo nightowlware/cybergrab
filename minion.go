@@ -5,6 +5,7 @@ import (
 	"golang.org/x/net/html"
 	"net/http"
 	"strings"
+	"time"
 )
 
 type pageMinion struct {
@@ -28,49 +29,54 @@ func (this pageMinion) run(url string) error {
 
 	if invalidUrl(url) {
 		return fmt.Errorf("URL <%s> is invalid, ignoring.", url)
-	} else {
-		// parse the current page for links
-		resp, err := http.Get(url)
-		if err != nil {
-			return nil
-		}
-		defer resp.Body.Close()
+	}
 
-		z := html.NewTokenizer(resp.Body)
+	// set a timeout for http.Get()
+	timeout := time.Duration(WORKER_TIMEOUT_SECONDS * time.Second)
+	client := http.Client {
+		Timeout: timeout,
+	}
 
-		// iterate through all hrefs and decide whether to
-		// download the page, push the page into the queue for
-		// other PageScrubbers to process, or both.
-		for tt := z.Next(); tt != html.ErrorToken; tt = z.Next() {
-			switch {
-			case tt == html.StartTagToken:
-				t := z.Token()
+	resp, err := client.Get(url)
+	if err != nil {
+		return nil
+	}
+	defer resp.Body.Close()
 
-				// skip tags that are neither links to follow or downloadable content
-				if !(t.Data == "a" || t.Data == "img" || t.Data == "video" || t.Data == "audio") {
-					continue
+	z := html.NewTokenizer(resp.Body)
+
+	// iterate through all hrefs and decide whether to
+	// download the page, push the page into the queue for
+	// other PageScrubbers to process, or both.
+	for tt := z.Next(); tt != html.ErrorToken; tt = z.Next() {
+		switch {
+		case tt == html.StartTagToken:
+			t := z.Token()
+
+			// skip tags that are neither links to follow or downloadable content
+			if !(t.Data == "a" || t.Data == "img" || t.Data == "video" || t.Data == "audio") {
+				continue
+			}
+
+			for _, attr := range t.Attr {
+				href_link := attr.Val
+
+				// deal with relative links
+				if !strings.HasPrefix(href_link, "http://") &&
+					!strings.HasPrefix(href_link, "https://") {
+					href_link = url + href_link
 				}
 
-				for _, attr := range t.Attr {
-					href_link := attr.Val
-
-					// deal with relative links
-					if !strings.HasPrefix(href_link, "http://") &&
-						!strings.HasPrefix(href_link, "https://") {
-						href_link = url + href_link
+				// is this a link tag?
+				if attr.Key == "href" {
+					if this.scheduler.getCrawlPolicy().ShouldCrawl(href_link) {
+						this.scheduler.getLinkDispenser().pushUrl(href_link)
 					}
+				}
 
-					// is this a link tag?
-					if attr.Key == "href" {
-						if this.scheduler.getCrawlPolicy().ShouldCrawl(href_link) {
-							this.scheduler.getLinkDispenser().pushUrl(href_link)
-						}
-					}
-
-					if attr.Key == "src" {
-						if this.scheduler.getCrawlPolicy().ShouldDownload(href_link) {
-							this.scheduler.getDownloader().addDownload(href_link)
-						}
+				if attr.Key == "src" {
+					if this.scheduler.getCrawlPolicy().ShouldDownload(href_link) {
+						this.scheduler.getDownloader().addDownload(href_link)
 					}
 				}
 			}

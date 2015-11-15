@@ -33,6 +33,8 @@ type downloader interface {
 	processDownloads()
 	addDownload(url string)
 	listDownloads() []string
+	getNumDownloads() uint
+	shutdown()
 }
 
 type pageScrubber interface {

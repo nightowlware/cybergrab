@@ -24,7 +24,7 @@ func invalidUrl(url string) bool {
 // 3. Do nothing
 //                                                }
 // Returns error or nil for success
-func (this pageMinion) run(url string) error {
+func (pg pageMinion) run(url string) error {
 	fmt.Println("pageMinion: Scrubbing page: " + url)
 
 	if invalidUrl(url) {
@@ -69,19 +69,18 @@ func (this pageMinion) run(url string) error {
 
 				// is this a link tag?
 				if attr.Key == "href" {
-					if this.scheduler.getCrawlPolicy().ShouldCrawl(href_link) {
-						this.scheduler.getLinkDispenser().pushUrl(href_link)
+					if pg.scheduler.getCrawlPolicy().ShouldCrawl(href_link) {
+						pg.scheduler.getLinkDispenser().pushUrl(href_link)
 					}
 				}
 
 				if attr.Key == "src" {
-					if this.scheduler.getCrawlPolicy().ShouldDownload(href_link) {
-						this.scheduler.getDownloader().addDownload(href_link)
+					if pg.scheduler.getCrawlPolicy().ShouldDownload(href_link) {
+						pg.scheduler.getDownloader().addDownload(href_link)
 					}
 				}
 			}
 		}
 	}
-
 	return nil
 }

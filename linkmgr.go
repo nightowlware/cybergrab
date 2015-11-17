@@ -16,24 +16,24 @@ func newSimpleLinkMgr(bufferSize uint) *simpleLinkMgr {
 	return l
 }
 
-func (this *simpleLinkMgr) pushUrl(url string) {
+func (slm *simpleLinkMgr) pushUrl(url string) {
 	timeout := createTimeout(WORKER_TIMEOUT_SECONDS)
 
 	// skip the receive on the urls channel if it takes too long
 	select {
-	case this.urls <- url:
+	case slm.urls <- url:
 	case <-timeout:
 	}
 }
 
 // getUrl was initially an indefinitely-blocking receive on a channel,
 // but that was changed later to incorporate a timeout.
-func (this *simpleLinkMgr) getUrl() string {
+func (slm *simpleLinkMgr) getUrl() string {
 
 	timeout := createTimeout(WORKER_TIMEOUT_SECONDS)
 
 	select {
-	case url := <-this.urls:
+	case url := <-slm.urls:
 		return url
 	case <-timeout:
 		// return an invalid url in the case of a timeout on a channel receive
@@ -41,8 +41,8 @@ func (this *simpleLinkMgr) getUrl() string {
 	}
 }
 
-func (this *simpleLinkMgr) shutdown() {
-	close(this.urls)
+func (slm *simpleLinkMgr) shutdown() {
+	close(slm.urls)
 }
 
 // createTimeout returns a simple channel that will have a value

@@ -3,7 +3,6 @@ package cybergrab
 import (
 	"fmt"
 	"sync"
-	"sync/atomic"
 )
 
 type simpleScheduler struct {
@@ -11,7 +10,6 @@ type simpleScheduler struct {
 	downloader       downloader
 	numPageScrubbers uint
 	policy           CrawlPolicy
-	_count           *int32
 }
 
 func newSimpleScheduler(cp CrawlPolicy, numPageScrubbers uint, downloader downloader) *simpleScheduler {
@@ -19,32 +17,28 @@ func newSimpleScheduler(cp CrawlPolicy, numPageScrubbers uint, downloader downlo
 	scheduler.downloader = downloader
 	scheduler.numPageScrubbers = numPageScrubbers
 	scheduler.policy = cp
-	scheduler._count = new(int32)
-	*scheduler._count = 0
 	return scheduler
 }
 
-func (this *simpleScheduler) run(seedUrl string) {
+func (ss *simpleScheduler) run(seedUrl string) {
 	fmt.Printf("Starting a web-crawl @ seedUrl: %s\n", seedUrl)
 
 	// lazy initialization
-	if this.linkDispenser == nil {
-		this.linkDispenser = newSimpleLinkMgr(this.downloader.getNumDownloads())
-		this.linkDispenser.pushUrl(seedUrl)
+	if ss.linkDispenser == nil {
+		ss.linkDispenser = newSimpleLinkMgr(ss.downloader.getNumDownloads())
+		ss.linkDispenser.pushUrl(seedUrl)
 	}
 
 	// asynchronously launch N PageScrubbers, each in their own goroutine
 	go func() {
 		waitGroup := sync.WaitGroup{}
-		waitGroup.Add(int(this.numPageScrubbers))
+		waitGroup.Add(int(ss.numPageScrubbers))
 
-		for i := uint(0); i < this.numPageScrubbers; i++ {
+		for i := uint(0); i < ss.numPageScrubbers; i++ {
 			go func() {
 				// getUrl() is a (timeout) blocking receive on a channel
-				pageMinion{this}.run(this.linkDispenser.getUrl())
+				pageMinion{ss}.run(ss.linkDispenser.getUrl())
 				waitGroup.Done()
-				atomic.AddInt32(this._count, 1)
-				fmt.Println("COUNT OF DONES:::::::::::::::::::::::::::::::", *this._count)
 			}()
 		}
 
@@ -52,31 +46,31 @@ func (this *simpleScheduler) run(seedUrl string) {
 		// then shutdown the linkDispenser, causing the downloader to
 		// quit (safely).
 		waitGroup.Wait()
-		this.stop()
+		ss.stop()
 	}()
 
 	// synchronously perform downloads from the downloader - blocking until done or timeout.
-	this.downloader.processDownloads()
+	ss.downloader.processDownloads()
 }
 
-func (this *simpleScheduler) stop() {
+func (ss *simpleScheduler) stop() {
 	fmt.Println("Stopping Scheduler")
 
-	this.linkDispenser.shutdown()
-	this.linkDispenser = nil
+	ss.linkDispenser.shutdown()
+	ss.linkDispenser = nil
 
-	this.downloader.shutdown()
-	this.downloader = nil
+	ss.downloader.shutdown()
+	ss.downloader = nil
 }
 
-func (this *simpleScheduler) getLinkDispenser() linkDispenser {
-	return this.linkDispenser
+func (ss *simpleScheduler) getLinkDispenser() linkDispenser {
+	return ss.linkDispenser
 }
 
-func (this *simpleScheduler) getDownloader() downloader {
-	return this.downloader
+func (ss *simpleScheduler) getDownloader() downloader {
+	return ss.downloader
 }
 
-func (this *simpleScheduler) getCrawlPolicy() CrawlPolicy {
-	return this.policy
+func (ss *simpleScheduler) getCrawlPolicy() CrawlPolicy {
+	return ss.policy
 }

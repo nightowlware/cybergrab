@@ -16,7 +16,7 @@ func invalidUrl(url string) bool {
 	return url == ""
 }
 
-// Instructs this minion to process the given url.i
+// Instructs this minion to process the given url.
 //
 // This minion can do any combination of:         }
 // 1. Push a new url into the download queue

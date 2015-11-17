@@ -1,7 +1,7 @@
 package cybergrab_test
 
 import (
-	"bitbucket/cybergrab"
+	"github.com/nightowlware/cybergrab"
 	"fmt"
 	"log"
 	"os"
